@@ -5,7 +5,6 @@ class CalcHistory:
     def __init__(self):
         """загрузка файла истории или создание его"""
         self.file_name = 'calc_history.json'
-        self.data = ''
         try:
             with open(self.file_name) as self.fo:
                 self.data = json.load(self.fo)
@@ -15,22 +14,20 @@ class CalcHistory:
 
     def write_data(self):
         with open(self.file_name, 'w') as fo:
-            if not self.data:
+            try:
+                json.dump(self.data, fo)
+            except AttributeError:
                 self.data = {
                     'users': [{
+                        'id': 0,
                         'username': 'quest',
                         'password': None
                     }],
-                    'history': [{
-                        'id': 0,
-                        'username': 'quest',
-                        'time': datetime.today().strftime("%d-%m-%Y"),
-                        'operation': None
-                    }]
+                    'history': []
                 }
-            json.dump(self.data, fo)
+                json.dump(self.data, fo)
 
-    def is_user(self, username):
+    def get_user(self, username):
         for user in self.data['users']:
             if username == user['username']:
                 return user
@@ -38,6 +35,7 @@ class CalcHistory:
 
     def reg_user(self,username,password):
         new_user ={
+            'id': self.get_id_last_user(),
             'username': username,
             'password': password
         }
@@ -49,23 +47,28 @@ class CalcHistory:
             return True
         return False
 
+    def get_id_last_user(self):
+        return len(self.data['users'])
+
     def get_id_last_oper(self):
-        return len(self.data['history'])
+        return len(self.data['history'])+1
 
     def add_operation(self,oper,username):
-        new_oper = {
+        if username == 'quest':
+            pass
+        else:
+            new_oper = {
                     'id': self.get_id_last_oper(),
                     'username': username,
                     'time': datetime.today().strftime("%d-%m-%Y"),
                     'operation': oper
                 }
-        self.data['history'].append(new_oper)
-        self.write_data()
+            self.data['history'].append(new_oper)
+            self.write_data()
 
     def get_history(self,username,all):
         if all:
             return [oper for oper in self.data['history'] if oper['username'] == username]
-        else:
-            return [oper for oper in self.data['history']
-                    if oper['username'] == username and
-                    datetime.today().date() == datetime.strptime('27-01-2020',"%d-%m-%Y").date()]
+        return [oper for oper in self.data['history']
+                if oper['username'] == username and
+                datetime.today().date() == datetime.strptime(oper['time'],"%d-%m-%Y").date()]

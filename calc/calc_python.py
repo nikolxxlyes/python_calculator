@@ -1,27 +1,26 @@
 from calc.data import CalcHistory
 from calc.function import get_user,get_data_oper,calculator
 
-def calc():
+def calc(history, username):
     more_option = True if username != 'quest' else False
     print(f'{username}, lets calculate !!!')
     while True:
-        args = get_data_oper(more_option)
         try:
-            oper = calculator(*args, more_option=more_option)
-            if isinstance(oper,str):
-                print(oper)
-            elif username == 'quest':
-                print(oper[0])
-            else:
-                print(oper[0])
-                history.add_operation(oper[0], username)
+            oper = calculator(more_option)
+            print(oper)
+            history.add_operation(oper, username)
         except TypeError:
             print('Incorrect data.')
+        except KeyError as key:
+            print(f"{key} Isn't supported operation")
+        except Exception as e:
+            print(0)
+            print(type(e), e)
         more_calc = input("Once again? (y/n) >>> ")
         if more_calc == 'n':
             break
 
-def show_history():
+def show_history(history, username):
     if username == 'quest':
         print("Quest don't have history. This option for registered user!")
     else:
@@ -35,35 +34,33 @@ def show_history():
         for i, oper in enumerate(user_history):
             print(f"{i + 1}. {oper['operation']} / {oper['time']}")
 
-def change_user():
+def change_user(history, username):
     change = input('Change user? (y/n) >>> ')
     if change == 'y':
-        global username
         username = get_user(history)
-    # return username
+    return username
 
-def main_menu():
+def main_menu(history, username):
     cont = True
     while cont:
         print('-'*40)
         print("1. Calculator\n2. Show history\n3. Change user\n4. Quit")
         request = input('>>> ')
         if request == "1":
-            calc()
+            calc(history, username)
         elif request == '2':
-            show_history()
+            show_history(history, username)
         elif request == "3":
-            change_user()
+            username = change_user(history, username)
         elif request == "4":
             cont = False
         else:
             print("Incorrect request. Try again")
 
 def main():
-    global history, username
     history = CalcHistory()
     print("Hello, quest!")
     username = get_user(history)
-    main_menu()
+    main_menu(history, username)
 
 main()

@@ -1,61 +1,72 @@
-def calculator(number, oper, number2=None, more_option=False):
-    import math
-    if number2 is not None:
-        str_oper = f"{str(number)}{oper}{str(number2)}"
-    else:
-        str_oper = f"{oper}({str(number)})"
-    if oper == '+':
-        res = number + number2
-    elif oper == '-':
-        res = number - number2
-    elif oper == '/' or oper == ':':
-        try:
-            res = number / number2
-        except ZeroDivisionError :
-            return "Division by zero isn't possible"
-    elif oper == '*' or oper == 'x':
-        res = number * number2
-    elif oper == 'sin':
-        if more_option:
-            res = math.sin(number)
-        else:
-            return f"Operation '{oper}' for only register user"
-    elif oper == 'cos':
-        if more_option:
-            res =  math.cos(number)
-        else:
-            return f"Operation '{oper}' for only register user"
-    elif oper == 'tan':
-        if more_option:
-            res =  math.tan(number)
-        else:
-            return f"Operation '{oper}' for only register user"
-    elif oper == 'ctan':
-        if more_option:
-            res =  1 / math.tan(number)
-        else:
-            return f"Operation '{oper}' for only register user"
-    else:
-        return f"{oper} is not supported in this calculator"
+import math
 
-    return [f"{str_oper}={round(res,2)}"]
+def add(a,b):
+    return a + b
 
-def get_data_oper(more_option):
+def dis(a,b):
+    return a - b
+
+def mul(a,b):
+    return a - b
+
+def div(a,b):
+    return a - b
+
+def sin(a):
+    return math.sin(a)
+
+def cos(a):
+    return math.cos(a)
+
+def tan(a):
+    return math.tan(a)
+
+def ctan(a):
+    return 1 / math.tan(a)
+
+def calculator(more_option):
+    operations = {
+        '+': add,
+        '-': dis,
+        '*': mul,
+        '/': div,
+    }
+    reg_oper = {
+        'sin': sin,
+        'cos': cos,
+        'tan': tan,
+        'ctan': ctan
+    }
     if more_option:
-        operations = '+,-,*,/ and sin,cos,tan,ctan'
+        operations.update(reg_oper)
+    num1,oper,*num2 = get_data_oper(operations,reg_oper)
+    if num2:
+        str_oper = f"{str(num1)}{oper}{str(*num2)}"
     else:
-        operations = '+,-,*,/'
+        str_oper = f"{oper}({str(num1)})"
     try:
-        number = float(input("Enter first number >>> ").strip())
-        oper = input(f"Enter operation ({operations})>>> ").strip()
-        if oper != 'sin' and oper != 'cos' and oper != 'tan' and oper != 'ctan':
-            number2 = float(input("Enter second number >>> ").strip())
-            return number, oper, number2
-        return number, oper
+        res = operations[oper](num1,*num2)
+        return f"{str_oper}={round(res, 2)}"
+    except KeyError:
+        raise KeyError(oper)
+    # except Exception as error:
+    #     print("calc")
+    #     print(type(error), error)
+
+def get_data_oper(operations,reg_oper):
+    oper_list = operations.keys()
+    try:
+        num1 = float(input("Enter first number >>> ").strip())
+        oper = input(f"Enter operation ({' '.join(oper_list)})>>> ").strip()
+        if oper not in reg_oper:
+            num2 = float(input("Enter second number >>> ").strip())
+            return num1, oper, num2
+        return num1, oper
     except ValueError:
         pass
-    except Exception as error:
-        pass
+    # except Exception as error:
+    #     print(1)
+    #     print(type(error), error)
 
 def get_user(history):
     username = ''
@@ -66,7 +77,7 @@ def get_user(history):
         if request == '':
             username = 'quest'
         else:
-            user = history.is_user(request)
+            user = history.get_user(request)
             if user:
                 print(f"Hello, {request}!")
                 n = 3
@@ -79,10 +90,10 @@ def get_user(history):
                         print("Incorrect password")
                         n -= 1
                 else:
-                    print('Try again')
+                    print('Invalid login. Try again')
             else:
                 print(f"User {request} is not found.")
-                register = input('Do you want register this username?(y/n) >>> ')
+                register = input('Do you want to register this username?(y/n) >>> ')
                 if register == 'y':
                     point = 3
                     while point:
@@ -100,6 +111,6 @@ def get_user(history):
                             print(f"Congratulation, you're registered now as {username}.")
                             break
                     else:
-                        print('Try again')
+                        print('Invalid registration. Try again')
     print(f'Welcome, {username}!')
     return username
