@@ -7,10 +7,10 @@ def dis(a,b):
     return a - b
 
 def mul(a,b):
-    return a - b
+    return a * b
 
 def div(a,b):
-    return a - b
+    return a / b
 
 def sin(a):
     return math.sin(a)
@@ -64,9 +64,6 @@ def get_data_oper(operations,reg_oper):
         return num1, oper
     except ValueError:
         pass
-    # except Exception as error:
-    #     print(1)
-    #     print(type(error), error)
 
 def get_user(history):
     username = ''
@@ -77,13 +74,13 @@ def get_user(history):
         if request == '':
             username = 'quest'
         else:
-            user = history.get_user(request)
-            if user:
+            login = history.get_user(request)
+            if login:
                 print(f"Hello, {request}!")
                 n = 3
                 while n:
-                    password = input('Enter your password>>> ')
-                    if history.check_password(password,user):
+                    password = input('Enter your password>>> ').strip()
+                    if history.check_password(password,login):
                         username = request
                         break
                     else:
@@ -93,24 +90,8 @@ def get_user(history):
                     print('Invalid login. Try again')
             else:
                 print(f"User {request} is not found.")
-                register = input('Do you want to register this username?(y/n) >>> ')
-                if register == 'y':
-                    point = 3
-                    while point:
-                        pass1 = input('Create password (8+ symbol)>>> ')
-                        pass2 = input('Repeat password >>> ')
-                        if pass1 != pass2:
-                            print('pass1 != pass2')
-                            point -= 1
-                        elif len(pass1) < 8:
-                            print('len(pass1) < 8')
-                            point -= 1
-                        else:
-                            username = request
-                            history.reg_user(username, pass1)
-                            print(f"Congratulation, you're registered now as {username}.")
-                            break
-                    else:
-                        print('Invalid registration. Try again')
+                continue_reg = input('Do you want to register this username?(y/n) >>> ').strip()
+                if continue_reg == 'y':
+                    username = history.register(request)
     print(f'Welcome, {username}!')
     return username

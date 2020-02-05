@@ -12,7 +12,9 @@ def calc(history, username):
         except TypeError:
             print('Incorrect data.')
         except KeyError as key:
-            print(f"{key} Isn't supported operation")
+            print(f"{key} isn't supported operation")
+        except ZeroDivisionError:
+            print("Division by is invalid operation")
         except Exception as e:
             print(0)
             print(type(e), e)
@@ -24,7 +26,7 @@ def show_history(history, username):
     if username == 'quest':
         print("Quest don't have history. This option for registered user!")
     else:
-        part_history = input("All history? (y/n) >>>")
+        part_history = input("All history? (y/n) >>>").strip()
         if part_history == 'y':
             all = 'yes'
         else:
@@ -35,7 +37,7 @@ def show_history(history, username):
             print(f"{i + 1}. {oper['operation']} / {oper['time']}")
 
 def change_user(history, username):
-    change = input('Change user? (y/n) >>> ')
+    change = input('Change user? (y/n) >>> ').strip()
     if change == 'y':
         username = get_user(history)
     return username
@@ -45,7 +47,7 @@ def main_menu(history, username):
     while cont:
         print('-'*40)
         print("1. Calculator\n2. Show history\n3. Change user\n4. Quit")
-        request = input('>>> ')
+        request = input('>>> ').strip()
         if request == "1":
             calc(history, username)
         elif request == '2':
